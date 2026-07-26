@@ -1,5 +1,8 @@
 @import 'tailwindcss';
 
+@import 'swiper/css';
+@import 'swiper/css/navigation';
+
 @theme {
   /* breakpoints */
   --breakpoint-sm: 520px; /* mobile ~ mini tablet */
@@ -158,4 +161,23 @@
 .swiper-button-prev::after,
 .swiper-button-next::after {
   @apply text-gray-200;
+}
+
+/* swiper custom */
+.swiper-slide {
+  flex-shrink: 0;
+  width: 100%;
+  margin-right: 16px;
+}
+
+@media (min-width: 720px) {
+  .swiper-slide {
+    width: calc((100% - 16px) / 2);
+  }
+}
+
+@media (min-width: 1280px) {
+  .swiper-slide {
+    width: calc((100% - 32px) / 3);
+  }
 }

@@ -1,27 +1,14 @@
 'use client';
 
-import PopularList from '@/components/activities/PopularList.client';
-import { BREAKPOINTS, POPULAR_ACTIVITIES_COUNT, POPULAR_ACTIVITIES_VIEW_COUNT } from '@/constants';
-import useWindowWidth from '@/hooks/useWindowWidth';
+import { POPULAR_ACTIVITIES_COUNT } from '@/constants';
 import { Activities, PopularActivities } from '@/types/schema/activitiesSchema';
 import { fetchServerData } from '@/utils/api-server';
 import { InfiniteData, useSuspenseInfiniteQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
-
-const getPageSize = (width: number) => {
-  if (width >= BREAKPOINTS.lg) return POPULAR_ACTIVITIES_VIEW_COUNT.lg;
-  if (width >= BREAKPOINTS.md) return POPULAR_ACTIVITIES_VIEW_COUNT.md;
-  return POPULAR_ACTIVITIES_VIEW_COUNT.sm;
-};
+import PopularList from './PopularList.client';
 
 const PopularPageClient = ({ initialData }: { initialData: Activities }) => {
-  const innerWidth = useWindowWidth();
-  const [pageSize, setPageSize] = useState(POPULAR_ACTIVITIES_COUNT);
   const sortOrder = 'most_reviewed';
-
-  useEffect(() => {
-    if (innerWidth) setPageSize(getPageSize(innerWidth));
-  }, [innerWidth]);
+  const pageSize = POPULAR_ACTIVITIES_COUNT;
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isError } =
     useSuspenseInfiniteQuery<
@@ -32,6 +19,7 @@ const PopularPageClient = ({ initialData }: { initialData: Activities }) => {
       string | null | number
     >({
       queryKey: ['popularActivities', sortOrder, pageSize],
+
       queryFn: ({ pageParam = null }) =>
         fetchServerData<PopularActivities>({
           path: '/activities',
@@ -42,13 +30,21 @@ const PopularPageClient = ({ initialData }: { initialData: Activities }) => {
             sort: sortOrder,
           },
         }),
+
       initialPageParam: null,
-      initialData: { pages: [initialData], pageParams: [null] },
+
+      initialData: {
+        pages: [initialData],
+        pageParams: [null],
+      },
+
       getNextPageParam: lastPage =>
-        lastPage?.activities.length > 0 ? lastPage.cursorId : undefined,
+        lastPage.activities.length > 0 ? lastPage.cursorId : undefined,
     });
 
-  if (isError) return <div>목록 불러오기에 실패했습니다.</div>;
+  if (isError) {
+    return <div>목록 불러오기에 실패했습니다.</div>;
+  }
 
   return (
     <div className='mb-10 md:mb-[60px] lg:mb-[102px]'>

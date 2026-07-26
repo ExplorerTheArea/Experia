@@ -1,32 +1,22 @@
 'use client';
-import { BREAKPOINTS, POPULAR_ACTIVITIES_VIEW_COUNT } from '@/constants';
-import useWindowWidth from '@/hooks/useWindowWidth';
-import { useEffect, useMemo, useState } from 'react';
+
 import PopularItemSkeleton from './PopularItemSkeleton';
 
-const getPageSize = (width: number) => {
-  if (width >= BREAKPOINTS.lg) return POPULAR_ACTIVITIES_VIEW_COUNT.lg;
-  if (width >= BREAKPOINTS.md) return POPULAR_ACTIVITIES_VIEW_COUNT.md;
-  return POPULAR_ACTIVITIES_VIEW_COUNT.sm;
-};
-
 const PopularListSkeleton = () => {
-  const innerWidth = useWindowWidth();
-  const [pageSize, setPageSize] = useState(() => getPageSize(innerWidth ?? 0));
-
-  const skeletonItems = useMemo(
-    () => Array.from({ length: pageSize }, (_, index) => <PopularItemSkeleton key={index} />),
-    [pageSize],
-  );
-
-  useEffect(() => {
-    if (innerWidth) setPageSize(getPageSize(innerWidth));
-  }, [innerWidth]);
-
   return (
-    <section className='mb-[34px] max-w-[1200px]'>
-      <ul className='flex gap-4'>{skeletonItems}</ul>
-    </section>
+    <div className='mb-10 flex gap-4 overflow-hidden md:mb-[60px] lg:mb-[102px]'>
+      <div className='min-w-0 flex-1'>
+        <PopularItemSkeleton />
+      </div>
+
+      <div className='hidden min-w-0 flex-1 md:block'>
+        <PopularItemSkeleton />
+      </div>
+
+      <div className='hidden min-w-0 flex-1 lg:block'>
+        <PopularItemSkeleton />
+      </div>
+    </div>
   );
 };
 
